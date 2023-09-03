@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Button } from 'react-native';
+import { StyleSheet, Button, TextInput } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { getAuth, User,  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, Auth, UserCredential } from 'firebase/auth';
 
@@ -7,6 +7,8 @@ import app from '../firebaseConfig';
 
 export default function TabTwoScreen() {
   const [user, setUser] = useState<User | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const auth: Auth = getAuth(app);
 
   useEffect(() => {
@@ -19,20 +21,20 @@ export default function TabTwoScreen() {
 
   const handleSignUp = async () => {
     try {
-      const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, 'test@example.com', 'password');
+      const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
       const newUser = userCredential.user;
       setUser(newUser);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing up:', error.message);
     }
   };
 
   const handleSignIn = async () => {
     try {
-      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, 'test@example.com', 'password');
+      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
       const signedInUser = userCredential.user;
       setUser(signedInUser);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing in:', error.message);
     }
   };
@@ -41,18 +43,33 @@ export default function TabTwoScreen() {
     try {
       await signOut(auth);
       setUser(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing out:', error.message);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
       {user ? (
-        <Button onPress={handleSignOut} title='Log out' />
+        <>
+          <Text>Welcome {email}</Text>
+          <Button onPress={handleSignOut} title='Log out' />
+        </>
       ) : (
         <>
+          <Text>Email:</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            placeholder="Enter your name"
+            onChangeText={setEmail} />
+          <Text>Password:</Text>
+          <TextInput
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter your password"
+            secureTextEntry />
           <Button onPress={handleSignUp} title='Register' />
           <Button onPress={handleSignIn} title='Login' />
         </>
@@ -77,5 +94,14 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: '80%',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    width: 200,
+    color: 'white'
   },
 });
