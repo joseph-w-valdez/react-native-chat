@@ -49,7 +49,7 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
-          title:'Home',
+          title:'ChatApp',
           headerStyle: {
             backgroundColor: 'teal',
           },
