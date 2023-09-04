@@ -1,14 +1,47 @@
-import { StyleSheet } from 'react-native';
-
-import EditScreenInfo from '../../components/EditScreenInfo';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/Themed';
+import io from 'socket.io-client';
 
 export default function TabThreeScreen() {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const socket = io('http:/localhost:3000');
+
+    socket.on('connect', () => {
+      console.log('Connected to server.');
+    });
+
+    socket.on('message', (data: string) => {
+      console.log('Received message from server:', data);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const sendMessage = () => {
+    console.log(message)
+    const socket = io('http:/localhost:3000');
+    socket.emit('message', message);
+    setMessage('')
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab Three</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/three.tsx" />
+      <Text>Message:</Text>
+      <TextInput
+        style={styles.input}
+        value={message}
+        placeholder="Enter your message"
+        onChangeText={setMessage}
+      />
+      <TouchableOpacity style={styles.button} onPress={sendMessage}>
+        <Text style={styles.buttonText}>Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -23,9 +56,24 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    width: 200,
+    color: 'white',
+  },
+  button: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
