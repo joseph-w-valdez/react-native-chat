@@ -24,7 +24,7 @@ app.options('*', cors(corsOptions));
 const httpServer = http.createServer();
 const io = socketIO(httpServer, {
   cors: {
-    origin: corsOptions.origin, // Use the same origins as the Express app
+    origin: corsOptions.origin,
     methods: corsOptions.methods,
   }
 });

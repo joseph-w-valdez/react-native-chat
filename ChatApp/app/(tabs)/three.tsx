@@ -7,7 +7,7 @@ export default function TabThreeScreen() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const socket = io('http:/localhost:3000');
+    const socket = io('http://localhost:3000');
 
     socket.on('connect', () => {
       console.log('Connected to server.');
@@ -24,14 +24,13 @@ export default function TabThreeScreen() {
 
   const sendMessage = () => {
     console.log(message)
-    const socket = io('http:/localhost:3000');
+    const socket = io('http://localhost:3000');
     socket.emit('message', message);
     setMessage('')
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Three</Text>
       <Text>Message:</Text>
       <TextInput
         style={styles.input}
