@@ -25,7 +25,6 @@ export default function TabThreeScreen() {
   }, []);
 
   const sendMessage = () => {
-    console.log(message)
     const socket = io('http://localhost:3000');
     socket.emit('message', message);
     setMessage('')
@@ -35,6 +34,7 @@ export default function TabThreeScreen() {
     <View style={styles.container}>
       {user ? (
         <>
+          <Text>{user.email}</Text>
           <Text>Message:</Text>
           <TextInput
             style={styles.input}
@@ -49,9 +49,7 @@ export default function TabThreeScreen() {
       ) : (
         <Text>You are not logged in!</Text>
       )
-
     }
-
     </View>
   );
 }

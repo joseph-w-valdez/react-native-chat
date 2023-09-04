@@ -12,7 +12,7 @@ firebaseAdmin.initializeApp({
 });
 
 const corsOptions = {
-  origin: ['http://192.168.254.126:3000', 'http://localhost:8081'], // Add both origins
+  origin: ['http://localhost:8081'],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,XHR",
 };
 
