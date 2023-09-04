@@ -1,51 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, Button, TextInput } from 'react-native';
 import { Text, View } from '../../components/Themed';
-import { getAuth, User,  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, Auth, UserCredential } from 'firebase/auth';
-
-import app from '../firebaseConfig';
+import { useUserContext } from '../../contexts/FirebaseContext';
 
 export default function TabTwoScreen() {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, signUp, signIn, signOut } = useUserContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const auth: Auth = getAuth(app);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
-  }, [auth]);
 
   const handleSignUp = async () => {
-    try {
-      const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const newUser = userCredential.user;
-      setUser(newUser);
-    } catch (error: any) {
-      console.error('Error signing up:', error.message);
-    }
+    await signUp(email, password);
   };
 
   const handleSignIn = async () => {
-    try {
-      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
-      const signedInUser = userCredential.user;
-      setUser(signedInUser);
-    } catch (error: any) {
-      console.error('Error signing in:', error.message);
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      setUser(null);
-    } catch (error: any) {
-      console.error('Error signing out:', error.message);
-    }
+    await signIn(email, password);
   };
 
   return (
@@ -53,7 +21,7 @@ export default function TabTwoScreen() {
       {user ? (
         <>
           <Text>Welcome {email}</Text>
-          <Button onPress={handleSignOut} title='Log out' />
+          <Button onPress={signOut} title='Log out' />
         </>
       ) : (
         <>

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import io from 'socket.io-client';
+import { useUserContext } from '../../contexts/FirebaseContext';
 
 export default function TabThreeScreen() {
+  const { user } = useUserContext();
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -31,16 +33,25 @@ export default function TabThreeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>Message:</Text>
-      <TextInput
-        style={styles.input}
-        value={message}
-        placeholder="Enter your message"
-        onChangeText={setMessage}
-      />
-      <TouchableOpacity style={styles.button} onPress={sendMessage}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
+      {user ? (
+        <>
+          <Text>Message:</Text>
+          <TextInput
+            style={styles.input}
+            value={message}
+            placeholder="Enter your message"
+            onChangeText={setMessage}
+          />
+          <TouchableOpacity style={styles.button} onPress={sendMessage}>
+            <Text style={styles.buttonText}>Submit</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <Text>You are not logged in!</Text>
+      )
+
+    }
+
     </View>
   );
 }
