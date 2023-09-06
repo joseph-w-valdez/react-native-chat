@@ -57,15 +57,31 @@ export default function TabThreeScreen() {
     }
   };
 
+  // Function to determine if the message is from the current user
+  const isCurrentUser = (messageUserId: string) => messageUserId === user?.email;
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {/* Existing content */}
         <View>
           {messageHistory.map((message, index) => (
-            <Text key={index}>
-              {message.userId} ({message.time}): {message.message}
-            </Text>
+            <View
+              key={index}
+              style={[
+                styles.messageBubble,
+                isCurrentUser(message.userId) ? styles.currentUserBubble : styles.otherUserBubble,
+              ]}
+            >
+              <Text style={{fontWeight:'bold', fontSize:'14px'}}>
+                {message.userId}:
+              </Text>
+              <Text style={styles.messageText}>
+                 {message.message}
+              </Text>
+              <Text style={{color:'lightgray'}}>
+                ({(message.time)})
+              </Text>
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -99,10 +115,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -111,7 +123,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: '100%',
     color: 'white',
-    marginTop:6,
+    marginTop: 6,
   },
   button: {
     backgroundColor: 'blue',
@@ -126,10 +138,28 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
-    justifyContent: 'flex-end', // Content will start at the bottom
+    justifyContent: 'flex-end',
   },
   fixedContainer: {
     padding: 16,
     width: '100%',
+  },
+  messageBubble: {
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 8,
+    maxWidth: '70%',
+    alignSelf: 'flex-start',
+  },
+  currentUserBubble: {
+    backgroundColor: 'teal',
+    alignSelf: 'flex-end',
+  },
+  otherUserBubble: {
+    backgroundColor: 'gray',
+    alignSelf: 'flex-start',
+  },
+  messageText: {
+    color: 'white',
   },
 });
