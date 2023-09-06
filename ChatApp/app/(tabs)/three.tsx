@@ -72,7 +72,7 @@ export default function TabThreeScreen() {
                 isCurrentUser(message.userId) ? styles.currentUserBubble : styles.otherUserBubble,
               ]}
             >
-              <Text style={{fontWeight:'bold', fontSize:'14px'}}>
+              <Text style={{fontWeight:'bold'}}>
                 {message.userId}:
               </Text>
               <Text style={styles.messageText}>
