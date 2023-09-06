@@ -3,31 +3,46 @@ import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import io from 'socket.io-client';
 import { useUserContext } from '../../contexts/FirebaseContext';
+import formatTimestamp from '../../utilities/timestamp';
 
 export default function TabThreeScreen() {
   const { user } = useUserContext();
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const socket = io('http://localhost:3000');
+    if (user) {
+      const socket = io('http://localhost:3000', {
+        query: {
+          userId: user.email,
+        },
+      });
 
-    socket.on('connect', () => {
-      console.log('Connected to server.');
-    });
+      socket.on('connect', () => {
+        console.log('Connected to server.');
+      });
 
-    socket.on('message', (data: string) => {
-      console.log('Received message from server:', data);
-    });
+      socket.on('message', (data) => {
+        const timestamp = formatTimestamp(new Date());
+        console.log(`${data.userId} (${timestamp}): ${data.message}`);
+      });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [user]);
 
   const sendMessage = () => {
-    const socket = io('http://localhost:3000');
-    socket.emit('message', message);
-    setMessage('')
+    if (user) {
+      const socket = io('http://localhost:3000', {
+        query: {
+          userId: user.email
+        },
+      });
+      const timestamp = formatTimestamp(new Date());
+      socket.emit('message', { userId: user.email, message, time:timestamp });
+      setMessage('');
+    }
   };
 
   return (
@@ -48,11 +63,11 @@ export default function TabThreeScreen() {
         </>
       ) : (
         <Text>You are not logged in!</Text>
-      )
-    }
+      )}
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

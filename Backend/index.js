@@ -32,10 +32,9 @@ const io = socketIO(httpServer, {
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  // Handle incoming socket events
   socket.on('message', (data) => {
-    console.log('Received message:', data);
-    io.emit('message', data);
+    console.log(`${data.userId} (${data.time}): ${data.message}`); // Display the message with timestamp
+    io.emit('message', { userId: data.userId, message: data.message, time: data.time }); // Send the message back to all clients
   });
 });
 
