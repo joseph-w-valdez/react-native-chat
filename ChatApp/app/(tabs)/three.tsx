@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import io from 'socket.io-client';
@@ -8,39 +8,51 @@ import formatTimestamp from '../../utilities/timestamp';
 export default function TabThreeScreen() {
   const { user } = useUserContext();
   const [message, setMessage] = useState('');
+  const [messageHistory, setMessageHistory] = useState<ChatMessage[]>([]);
+  const socketRef = useRef<any>(null);
+
+  interface ChatMessage {
+    userId: string;
+    message: string;
+    time: string;
+  }
+
+  useEffect(() => {
+    console.log(messageHistory);
+  }, [messageHistory])
 
   useEffect(() => {
     if (user) {
-      const socket = io('http://localhost:3000', {
+      // Initialize the socket once when the component mounts
+      socketRef.current = io('http://localhost:3000', {
         query: {
           userId: user.email,
         },
       });
 
-      socket.on('connect', () => {
+      socketRef.current.on('connect', () => {
         console.log('Connected to server.');
       });
 
-      socket.on('message', (data) => {
-        const timestamp = formatTimestamp(new Date());
-        console.log(`${data.userId} (${timestamp}): ${data.message}`);
+      socketRef.current.on('message', (data: ChatMessage) => {
+        const newMessage: ChatMessage = {
+          userId: data.userId,
+          time: data.time,
+          message: data.message,
+        };
+        setMessageHistory((prevMessages) => [...prevMessages, newMessage]);
       });
 
       return () => {
-        socket.disconnect();
+        socketRef.current.disconnect();
       };
     }
   }, [user]);
 
   const sendMessage = () => {
-    if (user) {
-      const socket = io('http://localhost:3000', {
-        query: {
-          userId: user.email
-        },
-      });
+    if (user && socketRef.current) {
       const timestamp = formatTimestamp(new Date());
-      socket.emit('message', { userId: user.email, message, time:timestamp });
+      socketRef.current.emit('message', { userId: user.email, message, time: timestamp });
       setMessage('');
     }
   };
