@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { Text, View } from '../../components/Themed';
+import { StyleSheet, TextInput, TouchableOpacity, ScrollView, View, KeyboardAvoidingView, Platform } from 'react-native'; // Import ScrollView, View, and KeyboardAvoidingView
+import { Text } from '../../components/Themed';
 import io from 'socket.io-client';
 import { useUserContext } from '../../contexts/FirebaseContext';
 import formatTimestamp from '../../utilities/timestamp';
@@ -58,28 +58,40 @@ export default function TabThreeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      {user ? (
-        <>
-          <Text>{user.email}</Text>
-          <Text>Message:</Text>
-          <TextInput
-            style={styles.input}
-            value={message}
-            placeholder="Enter your message"
-            onChangeText={setMessage}
-          />
-          <TouchableOpacity style={styles.button} onPress={sendMessage}>
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <Text>You are not logged in!</Text>
-      )}
-    </View>
+    <KeyboardAvoidingView style={styles.container} behavior="padding" keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {/* Existing content */}
+        <View>
+          {messageHistory.map((message, index) => (
+            <Text key={index}>
+              {message.userId} ({message.time}): {message.message}
+            </Text>
+          ))}
+        </View>
+      </ScrollView>
+
+      <View style={styles.fixedContainer}>
+        {user ? (
+          <>
+            <Text>{user.email}</Text>
+            <Text>Message:</Text>
+            <TextInput
+              style={styles.input}
+              value={message}
+              placeholder="Enter your message"
+              onChangeText={setMessage}
+            />
+            <TouchableOpacity style={styles.button} onPress={sendMessage}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text>You are not logged in!</Text>
+        )}
+      </View>
+    </KeyboardAvoidingView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -97,8 +109,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
-    width: 200,
+    width: '100%',
     color: 'white',
+    marginTop:6,
   },
   button: {
     backgroundColor: 'blue',
@@ -110,5 +123,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: 'flex-end', // Content will start at the bottom
+  },
+  fixedContainer: {
+    padding: 16,
+    width: '100%',
   },
 });
