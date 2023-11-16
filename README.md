@@ -1,6 +1,6 @@
 # react-native-chat
 
-![chatApp-1 469e198c](https://github.com/joseph-w-valdez/react-native-chat/assets/117682160/93a2a4c4-f816-444a-867a-51438e5b6d14)
+![chatApp](https://github.com/joseph-w-valdez/react-native-chat/assets/117682160/93a2a4c4-f816-444a-867a-51438e5b6d14)
 
 # Real-Time Chat Application
 
